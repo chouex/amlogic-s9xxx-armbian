@@ -93,7 +93,7 @@ jobs:
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Compile the kernel [ ${{ inputs.kernel_version }} ]
-        uses: ophub/amlogic-s9xxx-armbian@main
+        uses: chouex/amlogic-s9xxx-armbian@main
         if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
         with:
           build_target: kernel
@@ -104,17 +104,10 @@ jobs:
           kernel_sign: ${{ inputs.kernel_sign }}
           kernel_toolchain: ${{ inputs.kernel_toolchain }}
 
-      - name: Upload Kernel to Release
-        uses: ncipollo/release-action@main
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4
         if: ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
         with:
-          tag: kernel_stable
-          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
-          allowUpdates: true
-          removeArtifacts: false
-          replacesArtifacts: true
-          token: ${{ secrets.GH_TOKEN }}
-          body: |
-            The kernel can be used to compile Armbian and OpenWrt.
-            The kernel source code comes from: ${{ inputs.kernel_source }}
-            The kernel compilation toolchain: ${{ inputs.kernel_toolchain }}
+          name: kernel
+          path: ${{ env.PACKAGED_OUTPUTPATH }}
+        

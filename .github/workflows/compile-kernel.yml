@@ -13,10 +13,11 @@ on:
       kernel_source:
         description: "Select the kernel source"
         required: false
-        default: "rockchip-linux/kernel@stable-4.4-rk3399-linux"
+        default: "codesnas"
         type: choice
         options:
           - unifreq
+          - codesnas
           - unifreq/linux-5.10.y-rk35xx
           - rockchip-linux/kernel
       kernel_version:
@@ -25,9 +26,14 @@ on:
         default: "5.10.1"
         type: choice
         options:
+          - 5.4.1_5.10.1
+          - 5.15.1_6.1.1
+          - 6.1.1_6.6.1
+          - 5.4.1
           - 5.10.1
           - 5.15.1
           - 6.1.1
+          - 6.6.1
           - stable-4.4-rk3399-linux
       kernel_auto:
         description: "Auto use the latest kernel"
@@ -69,7 +75,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Initialization environment
         id: init

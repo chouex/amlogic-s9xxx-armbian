@@ -16,11 +16,9 @@ on:
         type: choice
         options:
           - jammy
-          - lunar
-          - mantic
+          - noble
           - bullseye
           - bookworm
-          - trixie
       armbian_board:
         description: "Select device board."
         required: false
@@ -28,7 +26,7 @@ on:
         type: choice
         options:
           - all
-          - s905w_s905x_s905mb_s905l3b_s905x2_s905x3_s912_s922x_s922x-ct2000_s922x-reva
+          - s905w_s905x_s905mb_s905l3a_s905l3b_s905x2_s905x3_s912_s922x_s922x-ct2000_s922x-reva
           - s905x3-x88-pro-x3_s912-m8s-pro_s905x-t95_s912-t95z-plus_s905l3-unt400g1_s905lb-r3300l
           - seewo-sv21_smart-am40_station-m1_sw799_tn3399_zysj_tvi3315a_xiaobao_zcube1-max
           - vplus_tanix-tx6_tqc-a01
@@ -50,10 +48,12 @@ on:
           - h69k
           - h88k
           - h88k-v3
+          - hugsun-x99
           - ipc-r
           - king3399
           - kylin3399
           - leez
+          - lx-r3s
           - nanopi-r5c
           - nanopi-r5s
           - panther-x2
@@ -228,7 +228,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Initialization environment
         id: init

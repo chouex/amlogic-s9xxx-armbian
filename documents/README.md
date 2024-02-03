@@ -91,6 +91,7 @@ GitHub Actions is a service launched by Microsoft that provides a virtual server
     - [12.16 How to Resolve the Issue of I/O Errors While Writing to eMMC](#1216-how-to-resolve-the-issue-of-io-errors-while-writing-to-emmc)
     - [12.17 How to Solve the Issue of No Sound in the Bullseye Version](#1217-how-to-solve-the-issue-of-no-sound-in-the-bullseye-version)
     - [12.18 How to build the boot.scr file](#1218-how-to-build-the-bootscr-file)
+    - [12.19 How to Enable Remote Desktop and Modify the Default Port](#1219-how-to-enable-remote-desktop-and-modify-the-default-port)
 
 ## 1. Register your own Github account
 
@@ -408,8 +409,8 @@ When specifying the kernel version number through the `-k` parameter, you can ac
 
 When updating the kernel, the currently used system kernel will be automatically backed up, stored in the `/ddbr/backup` directory, retaining the three most recently used kernel versions. If the newly installed kernel is unstable, you can restore to the backed-up kernel at any time:
 ```shell
-# Enter the backup kernel directory, such as 5.10.125
-cd /ddbr/backup/5.10.125
+# Enter the backup kernel directory, such as 6.6.12
+cd /ddbr/backup/6.6.12
 # Execute the kernel update command, which will automatically install the kernel in the current directory
 armbian-update
 ```
@@ -429,7 +430,7 @@ armbian-update -s /dev/sda
 armbian-update -s
 ```
 
-If your network access to github.com is poor and you can't update online, you can manually download the kernel, upload it to any directory of the Armbian system, and enter the kernel directory to execute `armbian-update` for local installation. If there's a complete set of kernel files in the current directory, it will use the kernel from the current directory for the update (the four kernel files needed for the update are `header-xxx.tar.gz`, `boot-xxx.tar.gz`, `dtb-xxx.tar.gz`, `modules-xxx.tar.gz`. Other kernel files are not necessary and their presence does not affect the update. The system can accurately identify needed kernel files). You can freely update among the optional kernels supported by the device, such as updating from kernel 5.10.125 to kernel 5.15.50.
+If your network access to github.com is poor and you can't update online, you can manually download the kernel, upload it to any directory of the Armbian system, and enter the kernel directory to execute `armbian-update` for local installation. If there's a complete set of kernel files in the current directory, it will use the kernel from the current directory for the update (the four kernel files needed for the update are `header-xxx.tar.gz`, `boot-xxx.tar.gz`, `dtb-xxx.tar.gz`, `modules-xxx.tar.gz`. Other kernel files are not necessary and their presence does not affect the update. The system can accurately identify needed kernel files). You can freely update among the optional kernels supported by the device, such as updating from kernel 6.6.12 to kernel 5.15.50.
 
 Custom options set by `-r`/`-u`/`-b` parameters can be permanently written into the relevant parameters in the individual configuration file `/etc/ophub-release`, to avoid entering it each time. The corresponding settings are:
 
@@ -1369,5 +1370,15 @@ reboot
 
 # Additional Explanation
 # For Amlogic devices, the file used in USB is /boot/boot.scr, while the file used for writing to eMMC is /boot/boot-emmc.scr.
+```
+
+### 12.19 How to Enable Remote Desktop and Modify the Default Port
+
+In the software center `armbian-software`, selecting `201` allows you to install a desktop. When installing the desktop, you will be asked whether to enable the remote desktop, input `y` to enable. The default port for the remote desktop is `3389`, and you can use a custom port according to your needs:
+
+```shell
+sudo nano /etc/xrdp/xrdp.ini
+# Change to a custom port, for example 5000
+port=5000
 ```
 

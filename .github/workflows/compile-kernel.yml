@@ -107,10 +107,19 @@ jobs:
           kernel_sign: ${{ inputs.kernel_sign }}
           kernel_toolchain: ${{ inputs.kernel_toolchain }}
 
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload Kernel to Release
+        uses: ncipollo/release-action@main
         if: ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
         with:
-          name: kernel-${{ inputs.kernel_version }}${{ inputs.kernel_sign }}
-          path: ${{ env.PACKAGED_OUTPUTPATH }}
-
+          tag: kernel_rk35xx
+          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          token: ${{ secrets.GH_TOKEN }}
+          body: |
+            - The kernel can be used to compile Armbian and OpenWrt.
+            - The kernel source code comes from: unifreq/linux-5.10.y-rk35xx
+            - The kernel compilation toolchain: gcc
+            - This is a dedicated kernel for `Rockchip rk3528/rk3566/rk3568` and is not compatible with other series.
+            - 这是 `Rockchip rk3528/rk3566/rk3568` 专用内核，和其他系列不通用。

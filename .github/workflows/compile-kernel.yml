@@ -56,6 +56,10 @@ on:
         options:
           - clang
           - gcc
+      auto_patch:
+        description: "Set whether to use kernel patches"
+        required: false
+        default: "true"
       kernel_sign:
         description: "Set the kernel custom signature"
         required: false
@@ -106,6 +110,7 @@ jobs:
           kernel_package: ${{ inputs.kernel_package }}
           kernel_sign: ${{ inputs.kernel_sign }}
           kernel_toolchain: ${{ inputs.kernel_toolchain }}
+          auto_patch: ${{ inputs.auto_patch }}
 
       - name: Upload Kernel to Release
         uses: ncipollo/release-action@main

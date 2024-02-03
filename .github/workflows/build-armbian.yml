@@ -24,7 +24,7 @@ on:
       armbian_board:
         description: "Select device board."
         required: false
-        default: "all"
+        default: "panther-x2"
         type: choice
         options:
           - all
@@ -153,9 +153,10 @@ on:
       armbian_kernel:
         description: "Select kernel version."
         required: false
-        default: "6.1.1_6.6.1"
+        default: "5.10.1"
         type: choice
         options:
+          - 5.10.160
           - 5.4.1_5.10.1
           - 5.15.1_6.1.1
           - 6.1.1_6.6.1
@@ -172,16 +173,19 @@ on:
       kernel_repo:
         description: "Set the kernel repository."
         required: false
-        default: "ophub/kernel"
+        default: "hellotheasia/kernel"
         type: choice
         options:
           - ophub/kernel
+          - hellotheasia/kernel
       kernel_usage:
         description: "Set the tags of the stable kernel."
         required: false
-        default: "stable"
+        default: "rk35xx"
         type: choice
         options:
+          - rk35xx
+          - rk3588
           - stable
           - flippy
           - dev
@@ -213,7 +217,7 @@ on:
           - yourname
 
 env:
-  TZ: America/New_York
+  TZ: Asia/Shanghai
   ROOTFS_SCRIPT: compile-kernel/tools/script/armbian_rootfs.sh
 
 jobs:
@@ -285,7 +289,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
 
       - name: Rebuild Armbian
-        uses: ophub/amlogic-s9xxx-armbian@main
+        uses: hellotheasia/amlogic-s9xxx-armbian@main
         if: ${{ steps.clean.outputs.status }} == 'success' && !cancelled()
         with:
           build_target: armbian

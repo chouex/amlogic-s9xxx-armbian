@@ -13,10 +13,12 @@ on:
       kernel_source:
         description: "Select the kernel source"
         required: false
-        default: "unifreq/linux-5.10.y-rk35xx"
+        default: "rockchip-linux/kernel@stable-4.4-rk3399-linux"
         type: choice
         options:
+          - unifreq
           - unifreq/linux-5.10.y-rk35xx
+          - rockchip-linux/kernel
       kernel_version:
         description: "Select kernel version"
         required: false
@@ -24,6 +26,9 @@ on:
         type: choice
         options:
           - 5.10.1
+          - 5.15.1
+          - 6.1.1
+          - stable-4.4-rk3399-linux
       kernel_auto:
         description: "Auto use the latest kernel"
         required: false
@@ -102,4 +107,4 @@ jobs:
         with:
           name: kernel-${{ inputs.kernel_version }}${{ inputs.kernel_sign }}
           path: ${{ env.PACKAGED_OUTPUTPATH }}
-        
+

@@ -173,11 +173,12 @@ on:
       kernel_repo:
         description: "Set the kernel repository."
         required: false
-        default: "hellotheasia/kernel"
+        default: "chouex/amlogic-s9xxx-armbian-kernel"
         type: choice
         options:
           - ophub/kernel
           - hellotheasia/kernel
+          - chouex/amlogic-s9xxx-armbian-kernel
       kernel_usage:
         description: "Set the tags of the stable kernel."
         required: false
@@ -185,7 +186,6 @@ on:
         type: choice
         options:
           - rk35xx
-          - rk3588
           - stable
           - flippy
           - dev
@@ -209,11 +209,12 @@ on:
       builder_name:
         description: "Set Armbian builder signature."
         required: false
-        default: "ophub"
+        default: "chouex"
         type: choice
         options:
           - ophub
           - angel
+          - chouex
           - yourname
 
 env:
@@ -289,7 +290,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
 
       - name: Rebuild Armbian
-        uses: hellotheasia/amlogic-s9xxx-armbian@main
+        uses: chouex/amlogic-s9xxx-armbian@rk35xx
         if: ${{ steps.clean.outputs.status }} == 'success' && !cancelled()
         with:
           build_target: armbian

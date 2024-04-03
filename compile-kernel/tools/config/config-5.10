@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 5.10.209 Kernel Configuration
+# Linux/arm64 5.10.160 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="aarch64-none-linux-gnu-gcc (Arm GNU Toolchain 13.2.rel1 (Build arm-13.7)) 13.2.1 20231009"
 CONFIG_CC_IS_GCC=y
@@ -1849,6 +1849,7 @@ CONFIG_WIRELESS=y
 CONFIG_WIRELESS_EXT=y
 CONFIG_WEXT_CORE=y
 CONFIG_WEXT_PROC=y
+CONFIG_WEXT_SPY=y
 CONFIG_WEXT_PRIV=y
 CONFIG_CFG80211=m
 # CONFIG_NL80211_TESTMODE is not set
@@ -8617,7 +8618,13 @@ CONFIG_DEBUG_BUGVERBOSE=y
 #
 # Compile-time checks and compiler options
 #
-# CONFIG_DEBUG_INFO is not set
+CONFIG_DEBUG_INFO=y
+# CONFIG_DEBUG_INFO_REDUCED is not set
+# CONFIG_DEBUG_INFO_COMPRESSED is not set
+# CONFIG_DEBUG_INFO_SPLIT is not set
+# CONFIG_DEBUG_INFO_DWARF4 is not set
+CONFIG_DEBUG_INFO_BTF=y
+# CONFIG_GDB_SCRIPTS is not set
 CONFIG_ENABLE_MUST_CHECK=y
 CONFIG_FRAME_WARN=2048
 CONFIG_STRIP_ASM_SYMS=y
@@ -8839,6 +8846,7 @@ CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED=y
 # arm64 Debugging
 #
 # CONFIG_PID_IN_CONTEXTIDR is not set
+# CONFIG_DEBUG_EFI is not set
 # CONFIG_ARM64_RELOC_TEST is not set
 # CONFIG_CORESIGHT is not set
 # end of arm64 Debugging

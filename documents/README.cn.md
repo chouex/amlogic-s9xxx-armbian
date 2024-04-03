@@ -10,12 +10,13 @@ Github Actions 是 Microsoft 推出的一项服务，它提供了性能配置非
 - [目录](#目录)
   - [1. 注册自己的 Github 的账户](#1-注册自己的-github-的账户)
   - [2. 设置隐私变量 GITHUB\_TOKEN](#2-设置隐私变量-github_token)
-  - [3. Fork 仓库并设置 GH\_TOKEN](#3-fork-仓库并设置-gh_token)
+  - [3. Fork 仓库并设置工作流权限](#3-fork-仓库并设置工作流权限)
   - [4. 个性化 Armbian 系统定制文件说明](#4-个性化-armbian-系统定制文件说明)
   - [5. 编译系统](#5-编译系统)
     - [5.1 手动编译](#51-手动编译)
     - [5.2 定时编译](#52-定时编译)
     - [5.3 自定义默认系统配置](#53-自定义默认系统配置)
+    - [5.4 使用逻辑卷扩大 Github Actions 编译空间](#54-使用逻辑卷扩大-github-actions-编译空间)
   - [6. 保存系统](#6-保存系统)
   - [7. 下载系统](#7-下载系统)
   - [8. 安装 Armbian 到 EMMC](#8-安装-armbian-到-emmc)
@@ -99,26 +100,13 @@ Github Actions 是 Microsoft 推出的一项服务，它提供了性能配置非
 
 ## 2. 设置隐私变量 GITHUB_TOKEN
 
-设置 Github 隐私变量 `GITHUB_TOKEN` 。在系统编译完成后，我们需要上传系统到 Releases ，我们根据 Github 官方的要求设置这个变量，方法如下：
-Personal center: Settings > Developer settings > Personal access tokens > Generate new token ( Name: GITHUB_TOKEN, Select: public_repo )。其他选项根据自己需要可以多选。提交保存，复制系统生成的加密 KEY 的值，先保存到自己电脑的记事本，下一步会用到这个值。图示如下：
+根据 [GitHub 文档](https://docs.github.com/zh/actions/security-guides/automatic-token-authentication#about-the-github_token-secret)，在每个工作流作业开始时，GitHub 会自动创建唯一的 GITHUB_TOKEN 机密以在工作流中使用。可以使用 `${{ secrets.GITHUB_TOKEN }}` 在工作流作业中进行身份验证。
+
+## 3. Fork 仓库并设置工作流权限
+
+现在可以 Fork 仓库了，打开仓库 https://github.com/ophub/amlogic-s9xxx-armbian ，点击右上的 Fork 按钮，复制一份仓库代码到自己的账户下，稍等几秒钟，提示 Fork 完成后，到自己的账户下访问自己仓库里的 amlogic-s9xxx-armbian 。在右上角的 `Settings` > `Actions` > `General` > `Workflow permissions` 下选择 `Read and write permissions` 并保存。图示如下：
 
 <div style="width:100%;margin-top:40px;margin:5px;">
-<img src=https://user-images.githubusercontent.com/68696949/109418474-85032b00-7a03-11eb-85a2-759b0320cc2a.jpg width="300" />
-<img src=https://user-images.githubusercontent.com/68696949/109418479-8b91a280-7a03-11eb-8383-9d970f4fffb6.jpg width="300" />
-<img src=https://user-images.githubusercontent.com/68696949/109418483-90565680-7a03-11eb-8320-0df1174b0267.jpg width="300" />
-<img src=https://user-images.githubusercontent.com/68696949/109418493-9815fb00-7a03-11eb-862e-deca4a976374.jpg width="300" />
-<img src=https://user-images.githubusercontent.com/68696949/109418485-93514700-7a03-11eb-848d-36de784a4438.jpg width="300" />
-</div>
-
-## 3. Fork 仓库并设置 GH_TOKEN
-
-现在可以 Fork 仓库了，打开仓库 https://github.com/ophub/amlogic-s9xxx-armbian ，点击右上的 Fork 按钮，复制一份仓库代码到自己的账户下，稍等几秒钟，提示 Fork 完成后，到自己的账户下访问自己仓库里的 amlogic-s9xxx-armbian 。在右上角的 `Settings` > `Secrets` > `Actions` > `New repostiory secret` ( Name: `GH_TOKEN`, Value: `填写刚才GITHUB_TOKEN的值` )，保存。并在左侧导航栏的 `Actions` > `General` > `Workflow permissions` 下选择 `Read and write permissions` 并保存。图示如下：
-
-<div style="width:100%;margin-top:40px;margin:5px;">
-<img src=https://user-images.githubusercontent.com/68696949/109418568-0eb2f880-7a04-11eb-81c9-194e32382998.jpg width="300" />
-<img src=https://user-images.githubusercontent.com/68696949/163203032-f044c63f-d113-4076-bf94-41f86c7dd0ce.png width="300" />
-<img src=https://user-images.githubusercontent.com/68696949/109418573-15417000-7a04-11eb-97a7-93973d7479c2.jpg width="300" />
-<img src=https://user-images.githubusercontent.com/68696949/167579714-fdb331f3-5198-406f-b850-13da0024b245.png width="300" />
 <img src=https://user-images.githubusercontent.com/68696949/167585338-841d3b05-8d98-4d73-ba72-475aad4a95a9.png width="300" />
 </div>
 
@@ -170,6 +158,30 @@ schedule:
 
 在本地编译时通过 `-b` 参数指定，在 github.com 的 Actions 里编译时通过 `armbian_board` 参数指定。使用 `-b all` 代表打包 `BUILD` 是 `yes` 的全部设备。使用指定 `BOARD` 参数打包时，无论 `BUILD` 是 `yes` 或者 `no` 均可打包，例如：`-b r68s_s905x3-tx3_s905l3a-cm311`
 
+### 5.4 使用逻辑卷扩大 Github Actions 编译空间
+
+Github Actions 编译空间默认是 84G，除去系统和必要软件包外，可用空间在 50G 左右，当编译全部固件时会遇到空间不足的问题，可以使用逻辑卷扩大编译空间至 110G 左右。参考 [.github/workflows/build-armbian.yml](../.github/workflows/build-armbian.yml) 文件里的方法，使用下面的命令创建逻辑卷。并在编译时使用逻辑卷的路径。
+
+```yaml
+- name: Create simulated physical disk
+  run: |
+    mnt_size=$(expr $(df -h /mnt | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 1)
+    root_size=$(expr $(df -h / | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 4)
+    sudo truncate -s "${mnt_size}"G /mnt/mnt.img
+    sudo truncate -s "${root_size}"G /root.img
+    sudo losetup /dev/loop6 /mnt/mnt.img
+    sudo losetup /dev/loop7 /root.img
+    sudo pvcreate /dev/loop6
+    sudo pvcreate /dev/loop7
+    sudo vgcreate github /dev/loop6 /dev/loop7
+    sudo lvcreate -n runner -l 100%FREE github
+    sudo mkfs.xfs /dev/github/runner
+    sudo mkdir -p /builder
+    sudo mount /dev/github/runner /builder
+    sudo chown -R runner.runner /builder
+    df -Th
+```
+
 ## 6. 保存系统
 
 系统保存的设置也在 [.github/workflows/build-armbian.yml](../../.github/workflows/build-armbian.yml) 文件里控制。我们将编译好的系统通过脚本自动上传到 github 官方提供的 Releases 里面。
@@ -182,7 +194,7 @@ schedule:
     tag: Armbian_${{ env.ARMBIAN_RELEASE }}_${{ env.PACKAGED_OUTPUTDATE }}
     artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
     allowUpdates: true
-    token: ${{ secrets.GH_TOKEN }}
+    token: ${{ secrets.GITHUB_TOKEN }}
     body: |
       These are the Armbian OS image
       * OS information
@@ -450,6 +462,48 @@ armbian-software
 ```
 
 使用 `armbian-software -u` 命令可以更新本地的软件中心列表。根据用户在 [Issue](https://github.com/ophub/amlogic-s9xxx-armbian/issues) 中的需求反馈，逐步整合常用[软件](../armbian-files/common-files/usr/share/ophub/armbian-software/software-list.conf)，实现一键安装/更新/卸载等快捷操作。包括 `docker 镜像`、`桌面软件`、`应用服务` 等。详见更多[说明](armbian_software.md)。
+
+根据你所在的国家或地区，使用 `armbian-apt` 命令选择合适的软件源，提高软件的下载速度。例如，选择中国的清华大学源：
+
+```shell
+armbian-apt
+
+[ STEPS ] Welcome to the Armbian source change script.
+[ INFO ] Please select a [ bookworm ] mirror site.
+  ┌──────┬───────────────────┬────────────────────────────────┐
+  │  ID  │  Country/Region   │  Mirror Site                   │
+  ├──────┼───────────────────┼────────────────────────────────┤
+  │   0  │  -                │  Restore default source        │
+  │   1  │  China            │  mirrors.tuna.tsinghua.edu.cn  │
+  │   2  │  China            │  mirrors.bfsu.edu.cn           │
+  │   3  │  China            │  mirrors.aliyun.com            │
+  │   4  │  Hongkong, China  │  mirrors.xtom.hk               │
+  │   5  │  Taiwan, China    │  opensource.nchc.org.tw        │
+  ├──────┼───────────────────┼────────────────────────────────┤
+  │   6  │  United States    │  mirrors.ocf.berkeley.edu      │
+  │   7  │  United States    │  mirrors.xtom.com              │
+  │   8  │  United States    │  mirrors.mit.edu               │
+  │   9  │  Canada           │  mirror.csclub.uwaterloo.ca    │
+  │  10  │  Canada           │  muug.ca/mirror                │
+  ├──────┼───────────────────┼────────────────────────────────┤
+  │  11  │  Finland          │  mirror.kumi.systems           │
+  │  12  │  Netherlands      │  mirrors.xtom.nl               │
+  │  13  │  Germany          │  mirrors.xtom.de               │
+  │  14  │  Russia           │  mirror.yandex.ru              │
+  │  15  │  India            │  in.mirror.coganng.com         │
+  ├──────┼───────────────────┼────────────────────────────────┤
+  │  16  │  Estonia          │  mirrors.xtom.ee               │
+  │  17  │  Australia        │  mirrors.xtom.au               │
+  │  18  │  South Korea      │  mirror.yuki.net.uk            │
+  │  19  │  Singapore        │  mirror.sg.gs                  │
+  │  20  │  Japan            │  mirrors.xtom.jp               │
+  └──────┴───────────────────┴────────────────────────────────┘
+[ OPTIONS ] Please Input ID: 1
+[ INFO ] Your selected source ID is: [ 1 ]
+[ STEPS ] Start to change the source of the system: [ mirrors.tuna.tsinghua.edu.cn ]
+[ INFO ] The system release is: [ bookworm ]
+[ SUCCESS ] Change the source of the system successfully.
+```
 
 ## 12. 常见问题
 
@@ -948,6 +1002,16 @@ bluetoothctl block 12:34:56:78:90:AB
 ### 12.9 如何更新系统中的服务脚本
 
 使用 `armbian-sync` 命令可以一键将本地系统中的全部服务脚本更新到最新版本。
+
+如果 `armbian-sync` 更新失败，说明这个命令的版本过旧，可以使用下面的方法更新这个命令：
+
+```shell
+wget https://raw.githubusercontent.com/ophub/amlogic-s9xxx-armbian/main/build-armbian/armbian-files/common-files/usr/sbin/armbian-sync -O /usr/sbin/armbian-sync
+
+chmod +x /usr/sbin/armbian-sync
+
+armbian-sync
+```
 
 ### 12.10 如何获取 eMMC 上的安卓系统分区信息
 
